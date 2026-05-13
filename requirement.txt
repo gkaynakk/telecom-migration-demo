@@ -1,0 +1,3 @@
+pandas
+faker
+azure-storage-blob
