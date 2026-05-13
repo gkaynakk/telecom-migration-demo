@@ -25,6 +25,4 @@ jobs:
         run: |
           python generators/generate_historical.py
 
-      - name: List generated files
-        run: |
-          ls -R output
+
