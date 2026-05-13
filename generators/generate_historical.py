@@ -24,7 +24,7 @@ HISTORICAL_END_DATE = datetime(2026, 4, 30)
 # -----------------------------
 AZURE_STORAGE_ACCOUNT = "telelcomhuaweidemo"
 AZURE_CONTAINER = "telecom-data"
-AZURE_SAS_TOKEN = os.getenv("sv=2025-11-05&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2027-03-18T19:02:25Z&st=2026-05-13T10:47:25Z&spr=https&sig=jBKNtvwDp60bHEqYrKJNiHMsdPWIemwbtNHgDf4ElSU%3D")
+AZURE_SAS_TOKEN = os.getenv("AZURE_STORAGE_SAS_TOKEN")
 
 AZURE_BLOB_URL = f"https://telelcomhuaweidemo.blob.core.windows.net"
 

@@ -6,7 +6,8 @@ on:
 jobs:
   generate-historical-data:
     runs-on: ubuntu-latest
-
+    env:
+      AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
