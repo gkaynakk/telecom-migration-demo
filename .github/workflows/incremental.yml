@@ -1,0 +1,36 @@
+name: Generate Incremental Telecom Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: "Run date in YYYY-MM-DD format"
+        required: false
+
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  generate-incremental-data:
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_STORAGE_SAS_TOKEN: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
+      RUN_DATE: ${{ github.event.inputs.run_date }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run incremental generator
+        run: |
+          python generators/generate_incremental.py
