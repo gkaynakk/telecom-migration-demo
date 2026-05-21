@@ -1,0 +1,40 @@
+name: Generate Huawei OBS Incremental Telecom Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: "Run date in YYYY-MM-DD format"
+        required: false
+
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  generate-huawei-incremental-data:
+    runs-on: ubuntu-latest
+
+    # Cutover guard: scheduled runs only proceed after 2026-06-05.
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule != '0 1 * * *' || github.run_started_at >= '2026-06-05T00:00:00Z'
+
+    env:
+      HUAWEI_OBS_AK: ${{ secrets.HUAWEI_OBS_AK }}
+      HUAWEI_OBS_SK: ${{ secrets.HUAWEI_OBS_SK }}
+      RUN_DATE: ${{ github.event.inputs.run_date }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Huawei OBS incremental generator
+        run: |
+          python generators/generate_incremental_obs.py

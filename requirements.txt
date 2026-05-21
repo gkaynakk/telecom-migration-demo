@@ -1,3 +1,4 @@
 pandas
 faker
 azure-storage-blob
+esdk-obs-python
