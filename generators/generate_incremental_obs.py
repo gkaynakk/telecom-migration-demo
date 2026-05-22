@@ -142,7 +142,7 @@ csv_files = {
 
 for file_name, df in csv_files.items():
     local_path = f"{OUTPUT_DIR}/{file_name}"
-    df.to_csv(local_path, index=False)
+    df.to_csv(local_path, index=False, header=False)
 
     if file_name == "fact_usage_daily.csv":
         object_key = f"usage_daily/date={RUN_DATE}/{file_name}"
