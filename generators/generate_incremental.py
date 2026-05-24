@@ -1,8 +1,9 @@
-import pandas as pd
-import random
 import os
-from faker import Faker
+import random
 from datetime import datetime, timedelta
+
+import pandas as pd
+from faker import Faker
 from azure.storage.blob import BlobServiceClient
 
 fake = Faker()
@@ -31,11 +32,13 @@ plan_keys = [1, 2, 3]
 payment_methods = ["Credit Card", "Bank Transfer", "Mobile Payment"]
 payment_statuses = ["PAID", "PENDING", "FAILED"]
 
+
 def upload_to_adls(local_file_path: str, blob_name: str) -> None:
     blob_service_client = BlobServiceClient(
         account_url=AZURE_BLOB_URL,
         credential=AZURE_SAS_TOKEN,
     )
+
     blob_client = blob_service_client.get_blob_client(
         container=AZURE_CONTAINER,
         blob=blob_name,
@@ -45,6 +48,7 @@ def upload_to_adls(local_file_path: str, blob_name: str) -> None:
         blob_client.upload_blob(data, overwrite=True)
 
     print(f"Uploaded to ADLS: {blob_name}")
+
 
 # -----------------------------
 # GENERATE incremental fact_usage_daily
@@ -122,16 +126,26 @@ fact_billing_df = pd.DataFrame(billing_rows)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 csv_files = {
-    "fact_usage_daily.csv": fact_usage_df,
-    "fact_billing.csv": fact_billing_df,
+    "fact_usage_daily.csv": {
+        "df": fact_usage_df,
+        "blob_path": f"incremental/usage_daily/date={RUN_DATE}/fact_usage_daily.csv",
+    },
+    "fact_billing.csv": {
+        "df": fact_billing_df,
+        "blob_path": f"incremental/billing/date={RUN_DATE}/fact_billing.csv",
+    },
 }
 
-for file_name, df in csv_files.items():
+for file_name, config in csv_files.items():
     local_path = f"{OUTPUT_DIR}/{file_name}"
-    df.to_csv(local_path, index=False)
 
-    blob_path = f"incremental/date={RUN_DATE}/{file_name}"
-    upload_to_adls(local_path, blob_path)
+    config["df"].to_csv(
+        local_path,
+        index=False,
+        header=False,
+    )
+
+    upload_to_adls(local_path, config["blob_path"])
 
 print("Incremental CSV files generated and uploaded successfully!")
 print(f"Run date: {RUN_DATE}")
